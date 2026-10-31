@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Karan Excel Academy</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f7f2;color:#183b25}
+header{background:#126b38;color:white;text-align:center;padding:28px 12px}
+header h1{margin:0;font-size:29px}
+header p{margin:8px 0 0}
+main{max-width:950px;margin:auto;padding:18px}
+input{width:100%;padding:14px;border:1px solid #aaa;border-radius:8px;font-size:16px}
+#count{margin:14px 0;color:#45634d}
+#list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.card{background:white;border-radius:9px;padding:12px;box-shadow:0 1px 5px #ccc}
+.card button{width:100%;text-align:left;background:#e5f3e8;color:#155b30;border:0;border-radius:7px;padding:13px;font-size:15px;font-weight:bold;cursor:pointer}
+.card button:hover{background:#c9e9d1}
+#detail{display:none;background:white;padding:20px;margin-top:20px;border-radius:10px;box-shadow:0 2px 8px #ccc}
+#detail h2{color:#16723b}
+code{display:block;background:#edf7ef;padding:12px;border-radius:7px;overflow-wrap:anywhere;margin:10px 0}
+.close{background:#176b38;color:white;padding:10px 18px;border:0;border-radius:6px}
+footer{text-align:center;padding:22px;color:#55715c}
+</style>
+</head>
+<body>
+<header>
+<h1>KARAN EXCEL ACADEMY</h1>
+<p>Learn Excel in Hindi & English</p>
+<p>100 Excel Formulas • Examples • Practice</p>
+</header>
+<main>
+<h2>Excel Formula Library</h2>
+<input id="search" placeholder="Search formula or topic..." oninput="showList()">
+<p id="count"></p>
+<div id="list"></div>
+<section id="detail">
+<button class="close" onclick="closeDetail()">← Back to Formulas</button>
+<h2 id="name"></h2>
+<p><b>Meaning:</b> <span id="meaning"></span></p>
+<p><b>Syntax / Example:</b></p>
+<code id="syntax"></code>
+<p><b>Example result:</b> <span id="result"></span></p>
+<p><b>Use:</b> <span id="use"></span></p>
+</section>
+</main>
+<footer>Created for learning • Karan Excel Academy</footer>
+<script>
+const F=[
+["SUM","संख्याओं का जोड़","=SUM(A1:A5)","150","कुल जोड़ निकालने के लिए"],
+["AVERAGE","औसत निकालना","=AVERAGE(A1:A5)","30","औसत अंक या वेतन निकालने के लिए"],
+["COUNT","संख्या वाले Cells गिनना","=COUNT(A1:A5)","5","संख्याओं की गिनती"],
+["COUNTA","भरे हुए Cells गिनना","=COUNTA(A1:A5)","5","खाली न होने वाले Cells गिनना"],
+["COUNTBLANK","खाली Cells गिनना","=COUNTBLANK(A1:A5)","2","खाली जगहों की गिनती"],
+["MAX","सबसे बड़ी संख्या","=MAX(A1:A5)","90","सबसे बड़ा अंक या मूल्य"],
+["MIN","सबसे छोटी संख्या","=MIN(A1:A5)","10","सबसे छोटा अंक या मूल्य"],
+["PRODUCT","गुणा करना","=PRODUCT(A1:A3)","24","कई संख्याओं का गुणा"],
+["ABS","धनात्मक मान","=ABS(-25)","25","संख्या का Absolute मान"],
+["ROUND","दशमलव Round करना","=ROUND(12.456,2)","12.46","दशमलव स्थान तय करना"],
+["ROUNDUP","ऊपर की ओर Round","=ROUNDUP(12.41,0)","13","अगले पूर्णांक तक Round"],
+["ROUNDDOWN","नीचे की ओर Round","=ROUNDDOWN(12.89,0)","12","नीचे की ओर Round"],
+["INT","नीचे का पूर्णांक","=INT(8.9)","8","पूर्णांक निकालना"],
+["TRUNC","दशमलव हटाना","=TRUNC(8.9)","8","दशमलव भाग हटाना"],
+["MOD","शेषफल निकालना","=MOD(10,3)","1","भाग का शेषफल"],
+["POWER","घात निकालना","=POWER(2,3)","8","किसी संख्या की Power"],
+["SQRT","वर्गमूल","=SQRT(64)","8","Square Root निकालना"],
+["SUMPRODUCT","गुणा करके जोड़ना","=SUMPRODUCT(A1:A3,B1:B3)","संबंधित गुणनफलों का जोड़","Quantity और Rate का कुल"],
+["SUBTOTAL","Subtotal निकालना","=SUBTOTAL(9,A1:A5)","150","सूची का Subtotal"],
+["AGGREGATE","विशेष गणना","=AGGREGATE(9,6,A1:A5)","150","विकल्पों के साथ गणना"],
+["IF","शर्त के अनुसार परिणाम",'=IF(A1>=33,"Pass","Fail")',"Pass या Fail","शर्त जाँचने के लिए"],
+["IFS","कई शर्तें जाँचना",'=IFS(A1>=80,"A",A1>=60,"B",TRUE,"C")',"A, B या C","Grade निकालने के लिए"],
+["AND","सभी शर्तें सही हों","=AND(A1>0,B1>0)","TRUE या FALSE","सभी शर्तों की जाँच"],
+["OR","कोई एक शर्त सही हो","=OR(A1>0,B1>0)","TRUE या FALSE","एक या अधिक शर्तें"],
+["NOT","परिणाम उलटना","=NOT(A1>10)","TRUE या FALSE","Logical result उलटना"],
+["XOR","Exclusive OR","=XOR(A1>0,B1>0)","TRUE या FALSE","केवल एक शर्त सही हो"],
+["IFERROR","Error का विकल्प",'=IFERROR(A1/B1,0)',"Error पर 0","Error संभालने के लिए"],
+["IFNA","N/A Error का विकल्प",'=IFNA(A1,"Not Found")',"Not Found","N/A Error संभालना"],
+["SWITCH","मान के अनुसार परिणाम",'=SWITCH(A1,1,"One",2,"Two","Other")',"One, Two या Other","कई विकल्पों में चयन"],
+["TRUE","TRUE मान देना","=TRUE()","TRUE","Logical value"],
+["FALSE","FALSE मान देना","=FALSE()","FALSE","Logical value"],
+["CONCAT","Text जोड़ना",'=CONCAT(A1,B1)',"दोनों Text साथ","Text जोड़ने के लिए"],
+["CONCATENATE","Text जोड़ना",'=CONCATENATE(A1,B1)',"दोनों Text साथ","पुराने Excel में Text जोड़ना"],
+["TEXTJOIN","Separator से Text जोड़ना",'=TEXTJOIN(", ",TRUE,A1:A3)',"Ram, Shyam, Mohan","कई Text जोड़ना"],
+["LEFT","बाएँ से अक्षर लेना",'=LEFT("KARAN",2)',"KA","शुरुआती अक्षर निकालना"],
+["RIGHT","दाएँ से अक्षर लेना",'=RIGHT("KARAN",2)',"AN","आखिरी अक्षर निकालना"],
+["MID","बीच से अक्षर लेना",'=MID("KARAN",2,3)',"ARA","बीच का Text निकालना"],
+["LEN","Text की लंबाई","=LEN(A1)","5","अक्षरों की गिनती"],
+["TRIM","अतिरिक्त Space हटाना",'=TRIM(" Ram  ")',"Ram","Extra spaces हटाना"],
+["UPPER","बड़े अक्षर","=UPPER(\"karan\")","KARAN","Text को Capital करना"],
+["LOWER","छोटे अक्षर","=LOWER(\"KARAN\")","karan","Text को Small करना"],
+["PROPER","हर शब्द का पहला अक्षर बड़ा","=PROPER(\"karan kumar\")","Karan Kumar","नाम ठीक करना"],
+["FIND","Text खोजना","=FIND(\"A\",\"KARAN\")","2","अक्षर की जगह ढूँढना"],
+["SEARCH","Text खोजना","=SEARCH(\"a\",\"KARAN\")","2","बिना Case की परवाह किए खोजना"],
+["REPLACE","Text बदलना",'=REPLACE("KARAN",1,2,"MO")',"MO RAN","पुराना Text बदलना"],
+["SUBSTITUTE","शब्द बदलना",'=SUBSTITUTE("Ram Ram","Ram","Shyam")',"Shyam Shyam","Text में बदलाव"],
+["TEXT","Number को Text बनाना",'=TEXT(1250,"₹#,##0")',"₹1,250","Number Format दिखाना"],
+["VALUE","Text को Number बनाना",'=VALUE("125")',"125","Text Number बदलना"],
+["EXACT","दो Text की तुलना",'=EXACT("Ram","Ram")',"TRUE","Text बराबर है या नहीं"],
+["REPT","Text दोहराना",'=REPT("*",5)',"*****","एक Text कई बार"],
+["TODAY","आज की तारीख","=TODAY()","आज की Date","Current Date"],
+["NOW","वर्तमान तारीख और समय","=NOW()","Date और Time","Current Date-Time"],
+["DATE","Date बनाना","=DATE(2026,10,31)","31-Oct-2026","Date तैयार करना"],
+["DAY","दिन निकालना","=DAY(A1)","31","Date का दिन"],
+["MONTH","महीना निकालना","=MONTH(A1)","10","Date का महीना"],
+["YEAR","वर्ष निकालना","=YEAR(A1)","2026","Date का वर्ष"],
+["HOUR","घंटा निकालना","=HOUR(A1)","10","समय का घंटा"],
+["MINUTE","मिनट निकालना","=MINUTE(A1)","30","समय का मिनट"],
+["SECOND","सेकंड निकालना","=SECOND(A1)","15","समय का सेकंड"],
+["WEEKDAY","सप्ताह का दिन नंबर","=WEEKDAY(A1)","1 से 7","Weekday जानना"],
+["WEEKNUM","सप्ताह नंबर","=WEEKNUM(A1)","सप्ताह संख्या","साल का Week Number"],
+["EDATE","महीने आगे या पीछे","=EDATE(A1,3)","3 महीने बाद","Due Date निकालना"],
+["EOMONTH","महीने का आखिरी दिन","=EOMONTH(A1,0)","महीने का अंतिम दिन","Month End Date"],
+["DAYS","दो तारीखों के दिन","=DAYS(B1,A1)","दिनों की संख्या","Date Difference"],
+["NETWORKDAYS","Working Days गिनना","=NETWORKDAYS(A1,B1)","कार्य दिवस","छुट्टियाँ छोड़कर दिन"],
+["WORKDAY","काम के दिन आगे","=WORKDAY(A1,10)","10 Working Days बाद","काम की तारीख"],
+["DATEDIF","दो तारीखों का अंतर","=DATEDIF(A1,B1,\"Y\")","वर्षों का अंतर","उम्र निकालना"],
+["VLOOKUP","ऊर्ध्वाधर Lookup","=VLOOKUP(E2,A2:C10,2,FALSE)","मिला हुआ मान","Table से जानकारी"],
+["HLOOKUP","क्षैतिज Lookup","=HLOOKUP(B4,A1:F3,2,FALSE)","मिला हुआ मान","Row में खोज"],
+["XLOOKUP","आधुनिक Lookup",'=XLOOKUP(E2,A2:A10,B2:B10,"Not Found")',"मिला हुआ मान","नई Excel में खोज"],
+["LOOKUP","मान खोजना","=LOOKUP(E2,A2:A10,B2:B10)","मिला हुआ मान","Lookup"],
+["INDEX","स्थान से मान","=INDEX(A1:C5,2,3)","दूसरी Row तीसरा Column","Cell का मान"],
+["MATCH","स्थान खोजना","=MATCH(E2,A2:A10,0)","Position Number","सूची में जगह"],
+["CHOOSE","सूची से विकल्प चुनना",'=CHOOSE(2,"Red","Blue","Green")',"Blue","Index के अनुसार चयन"],
+["OFFSET","Reference बदलना","=OFFSET(A1,2,1)","C3 का मान","दूसरे Cell का Reference"],
+["INDIRECT","Text से Reference","=INDIRECT(\"A1\")","A1 का मान","Text Reference"],
+["FILTER","Data Filter करना","=FILTER(A2:B10,B2:B10>50)","Matching Rows","शर्त के अनुसार Data"],
+["SORT","Data Sort करना","=SORT(A2:A10)","Sorted List","क्रम में लगाना"],
+["SORTBY","दूसरे Column से Sort","=SORTBY(A2:B10,B2:B10,-1)","Descending List","किसी अन्य Column से Sort"],
+["UNIQUE","Unique मान","=UNIQUE(A2:A10)","अलग-अलग मान","Duplicate हटाना"],
+["SEQUENCE","Number Series","=SEQUENCE(5)","1,2,3,4,5","Series बनाना"],
+["TRANSPOSE","Rows और Columns बदलना","=TRANSPOSE(A1:C2)","उलटा Table","Data की दिशा बदलना"],
+["RAND","Random Decimal","=RAND()","0 से 1 के बीच","Random Number"],
+["RANDBETWEEN","Random पूर्णांक","=RANDBETWEEN(1,100)","1 से 100","Random Number"],
+["RANK.EQ","Rank निकालना","=RANK.EQ(A1,A1:A10)","Rank Number","अंक की Rank"],
+["LARGE","Nवीं बड़ी संख्या","=LARGE(A1:A10,2)","दूसरी सबसे बड़ी","Top Values"],
+["SMALL","Nवीं छोटी संख्या","=SMALL(A1:A10,2)","दूसरी सबसे छोटी","Lowest Values"],
+["MEDIAN","मध्य मान","=MEDIAN(A1:A10)","बीच का मान","Median निकालना"],
+["MODE.SNGL","सबसे अधिक बार आने वाला मान","=MODE.SNGL(A1:A10)","सबसे आम मान","Mode निकालना"],
+["STDEV.S","Sample Standard Deviation","=STDEV.S(A1:A10)","Standard Deviation","Data फैलाव"],
+["VAR.S","Sample Variance","=VAR.S(A1:A10)","Variance","Data Variation"],
+["PMT","Loan की किस्त","=PMT(10%/12,12,-10000)","मासिक किस्त","Loan EMI"],
+["FV","Future Value","=FV(10%/12,12,-1000)","Future Value","भविष्य का मूल्य"],
+["PV","Present Value","=PV(10%/12,12,-1000)","Present Value","वर्तमान मूल्य"],
+["NPV","Net Present Value","=NPV(10%,B1:B5)","NPV राशि","Investment मूल्यांकन"],
+["IRR","Internal Rate of Return","=IRR(A1:A5)","Return Rate","Investment Return"],
+["CONVERT","Units बदलना",'=CONVERT(10,"km","mi")',"6.21 mi","माप की इकाई बदलना"]
+];
+function showList(){
+let q=document.getElementById("search").value.toLowerCase();
+let a=F.filter(f=>(f[0]+" "+f[1]).toLowerCase().includes(q));
+document.getElementById("count").textContent=a.length+" formulas found";
+document.getElementById("list").innerHTML=a.map(f=>`<div class="card"><button onclick="openFormula(${F.indexOf(f)})">${f[0]}<br><small>${f[1]}</small></button></div>`).join("");
+}
+function openFormula(i){
+let f=F[i];
+document.getElementById("name").textContent=f[0];
+document.getElementById("meaning").textContent=f[1];
+document.getElementById("syntax").textContent=f[2];
+document.getElementById("result").textContent=f[3];
+document.getElementById("use").textContent=f[4];
+document.getElementById("detail").style.display="block";
+document.getElementById("detail").scrollIntoView({behavior:"smooth"});
+}
+function closeDetail(){
+document.getElementById("detail").style.display="none";
+}
+showList();
+</script>
+</body>
+</html>
